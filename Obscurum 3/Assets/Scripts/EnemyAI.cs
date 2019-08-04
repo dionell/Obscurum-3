@@ -36,9 +36,31 @@ public class EnemyAI : MonoBehaviour
         {
             if(distance <= lookRadius)
             {
+                agent.isStopped = false;
+                anim.SetBool("Run", true);
                 agent.SetDestination(target.position);
+
+                if(distance <= agent.stoppingDistance)
+                {
+                    anim.SetTrigger("Attack");
+                    FaceTarget();
+                    Debug.Log("stop");
+                    anim.SetBool("Run", false);
+                }
+            }
+            else
+            {
+                agent.isStopped = true;
+                anim.SetBool("Run", false);
             }
         }
+    }
+
+    void FaceTarget()
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
 
     private void OnDrawGizmosSelected()
